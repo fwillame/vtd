@@ -34,9 +34,7 @@ retrieve:
 		curl -o "data/$${f2}" "https://docs.google.com/spreadsheets/d/e/"$${f1}"/pub?output=tsv" ; \
 	done < "${file}"
 
-#FSE613-blastreport.tsv         ${line%$'\r'}
-#2PACX-1vSQLhLA65XpIFrmoznaLIRxlWdsKpd7eZPNO2daYzO_yrBRZUzhjesotCAOipvllWFQTssIh2tP080y
-#
+
 
 extract:
 
@@ -111,17 +109,6 @@ view: retrieve
 		$(MAKE) -C $$subdir view; \
 	done
 
-
-
-
-
-
-
-
-
-
-
-
 retrieveX:
 	for fileID in $(GDOCS); do \
 		cd data/ && $(GDRIVE) export -f --mime $(tsv) $$fileID && cd ../	; \
@@ -163,33 +150,3 @@ VARIABLE = $(file < ${file})
 
 
 
-# ods2tsv
-
-
-
-# https://stackoverflow.com/questions/6564561/gnuplot-conditional-plotting-plot-col-acol-b-if-col-c-x
-#
-
-
-
-
-
-
-# declare -a array1
-
-# array1=( `cat "$filename"`)
-
-# retrieve2:
-# 	lista=
-
-
-
-# http://tldp.org/LDP/abs/html/arrays.html
-
-# https://docs.google.com/spreadsheets/d/e/2PACX-1vSQLhLA65XpIFrmoznaLIRxlWdsKpd7eZPNO2daYzO_yrBRZUzhjesotCAOipvllWFQTssIh2tP080y/pub?gid=0&single=true&output=tsv
-# https://stackoverflow.com/questions/13614275/reading-a-file-inside-makefile
-
-# $Id$
-
-
-# input="/path/to/your/input/file.cvs"
