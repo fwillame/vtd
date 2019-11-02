@@ -1,0 +1,56 @@
+# Variables that can be set from your Makefile :
+#
+# templex_IN : GNUplot templates which are expanded by templex.pl
+# 
+# PLOTS : plain GNUplot files from which to make graphics
+#
+# CLEANFILES : extra files to be deleted upon "make clean"
+
+# variable definitions
+
+templex = templex.pl
+my_plots = $(filter %.plot,$(PLOTS) $(templex_OUT))
+my_pics = $(my_plots:%.plot=%.png) $(my_plots:%.plot=%.eps) $(my_plots:%.plot=%.pdf) $(my_plots:%.plot=%.svg) $(my_plots:%.plot=%.jpg)
+my_cleanfiles = $(CLEANFILES) $(templex_OUT) $(my_pics)
+my_pdfs = $(my_plots:%.plot=%.pdf)
+
+# general rules
+
+all: pics
+	
+Makefile.templex: $(templex_IN)
+	$(templex) -d $^ > $@ 
+
+include Makefile.templex
+
+clean: 
+	rm -f Makefile.templex $(my_cleanfiles)
+
+# graphics
+
+pics: $(my_pics)
+
+#%.png: %.plot
+#	(echo set term png ; echo set output \"$@\"; cat $^) | gnuplot
+
+%.eps: %.plot
+	(echo set term postscript enhanced color eps lw 2 size 42cm,29.7cm; echo set output \"$@\"; cat $^) | gnuplot && \
+	sed -i -e 's/^\/LT5 {\(.*\) 1 1 0 DL } def/\/LT5 {\1 0.5 0.3 0.2 DL } def/g' $@
+
+%.pdf: %.eps
+	epstopdf $^
+
+%.svg: %.pdf
+	pdf2svg $^ $@
+
+%.jpg: %.pdf
+	convert -density 100 -trim $^ -quality 50 $@
+
+%.png: %.svg
+	convert -density 100 -trim $^ -quality 50 $@
+
+publish: $(my_pics)
+	scp $^ $(USER)@$(HOST):$(PUBDIR)
+
+view: $(my_pdfs)
+	xdg-open $^
