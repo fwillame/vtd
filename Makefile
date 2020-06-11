@@ -12,7 +12,7 @@ bkpname := $(shell basename $(CURDIR)).$(shell date +%F).tar.gz
 tempdir := $(shell mktemp -d)
 
 SUBDIRS		= vtd #fse607 # fse613
-file		= data/data-list.tsx
+file		= data/FSE613.list
 
 .DEFAULT_GOAL := all
 .PHONY: clean
@@ -37,23 +37,31 @@ retrieve:
 
 
 extract:
+	cp data/FSE613-restrictions.tsv data/restrictions.tsv
+	bin/process-timeline.awk < data/FSE613-contract.tsv > data/timeline.tsv
+	bin/process-blasting.awk < data/FSE613-blasting.tsv > data/blasting.tsv
+	bin/process-grouting.awk < data/FSE613-grouting.tsv > data/grouting.tsv
+	bin/convert-igp.awk < data/FSE613-IGP-utfall.tsv > data/FSE613-IGP-outcome.tsv
 
-	awk -F "\t| " '{ if(($$1 == "HT601N") && (($$2 == "salva") || ($$2 == "stross")))	{ print $$4"\t"$$15 } }'	data/report-2018-10-09.tsv | sort > data/HT601N.tsv
-	awk -F "\t| " '{ if(($$1 == "HT602S") && (($$2 == "salva") || ($$2 == "stross")))	{ print $$4"\t"$$15 } }'	data/report-2018-10-09.tsv | sort > data/HT602S.tsv
-	awk -F "\t| " '{ if(($$1 == "HT602N") && (($$2 == "salva") || ($$2 == "stross")))	{ print $$4"\t"$$15 } }'	data/report-2018-10-09.tsv | sort > data/HT602N.tsv
-	awk -F "\t| " '{ if(($$1 == "AT691" ) && ($$2 == "salva"))	{ print $$4"\t"$$13 } }'		data/report-2018-10-09.tsv | sort > data/AT691.tsv
-	awk -F "\t| " '{ if(($$1 == "69M"   ) && ($$2 == "salva"))	{ print $$4"\t"$$13 } }'		data/report-2018-10-09.tsv | sort > data/69M.tsv
-	awk -F "\t" '{ if(($$4 == "601")	&& ($$20  ~ /omgång 1/))	{ print substr($$7,1,10)"\t"$$11-100000"\t0\t"$$12-$$11 } }'	data/FSE613-grouting.tsv > data/HT601-inject-omg1.tsv
-	awk -F "\t" '{ if(($$4 == "601")	&& ($$20 !~ /omgång 1/))	{ print substr($$7,1,10)"\t"$$11-100000"\t0\t"$$12-$$11 } }'	data/FSE613-grouting.tsv > data/HT601-inject-omgx.tsv
-	awk -F "\t" '{ if(($$4 == "602")	&& ($$20  ~ /omgång 1/))	{ print substr($$7,1,10)"\t"$$11-200000"\t0\t"$$12-$$11 } }'	data/FSE613-grouting.tsv > data/HT602-inject-omg1.tsv
-	awk -F "\t" '{ if(($$4 == "602")	&& ($$20 !~ /omgång 1/))	{ print substr($$7,1,10)"\t"$$11-200000"\t0\t"$$12-$$11 } }'	data/FSE613-grouting.tsv > data/HT602-inject-omgx.tsv
-	awk -F "\t" '{ if(($$4 == "691")	&& ($$20  ~ /omgång 1/))	{ print substr($$7,1,10)"\t28526\t0\t"$$12-$$11 } }'			data/FSE613-grouting.tsv > data/AT691-inject-omg1.tsv
-	awk -F "\t" '{ if(($$4 == "691")	&& ($$20 !~ /omgång 1/))	{ print substr($$7,1,10)"\t28526\t0\t"$$12-$$11 } }'			data/FSE613-grouting.tsv > data/AT691-inject-omgx.tsv
-	awk -F "\t" '{ if(($$4 == "69M")	&& ($$20  ~ /omgång 1/))	{ print substr($$7,1,10)"\t28520\t0\t"$$12-$$11 } }'			data/FSE613-grouting.tsv > data/UT69M-inject-omg1.tsv
-	awk -F "\t" '{ if(($$4 == "69M")	&& ($$20 !~ /omgång 1/))	{ print substr($$7,1,10)"\t28520\t0\t"$$12-$$11 } }'			data/FSE613-grouting.tsv > data/UT69M-inject-omgx.tsv
-	awk -F "\t" '{ if(($$4 == "6AB")	&& ($$20  ~ /omgång 1/))	{ print substr($$7,1,10)"\t28552\t0\t"$$12-$$11 } }'			data/FSE613-grouting.tsv > data/UT6AB-inject-omg1.tsv
-	awk -F "\t" '{ if(($$4 == "6AB")	&& ($$20  ~ /omgång 1/))	{ print substr($$7,1,10)"\t28552\t0\t"$$12-$$11 } }'			data/FSE613-grouting.tsv > data/UT6AB-inject-omgx.tsv
-	data/convert-igp.awk < data/FSE613-IGP-utfall.tsv > data/FSE613-IGP-outcome.tsv
+
+#	awk -F "\t| " '{ if(($$1 == "HT601S") && (($$2 == "salva") || ($$2 == "stross")))	{ print $$4"\t"$$15 } }'	data/report-2018-10-09.tsv | sort > data/HT601S.tsv
+#	awk -F "\t| " '{ if(($$1 == "HT601N") && (($$2 == "salva") || ($$2 == "stross")))	{ print $$4"\t"$$15 } }'	data/report-2018-10-09.tsv | sort > data/HT601N.tsv
+#	awk -F "\t| " '{ if(($$1 == "HT602S") && (($$2 == "salva") || ($$2 == "stross")))	{ print $$4"\t"$$15 } }'	data/report-2018-10-09.tsv | sort > data/HT602S.tsv
+#	awk -F "\t| " '{ if(($$1 == "HT602N") && (($$2 == "salva") || ($$2 == "stross")))	{ print $$4"\t"$$15 } }'	data/report-2018-10-09.tsv | sort > data/HT602N.tsv
+#	awk -F "\t| " '{ if(($$1 == "AT691" ) && ($$2 == "salva"))	{ print $$4"\t"$$13 } }'		data/report-2018-10-09.tsv | sort > data/AT691.tsv
+#	awk -F "\t| " '{ if(($$1 == "69M"   ) && ($$2 == "salva"))	{ print $$4"\t"$$13 } }'		data/report-2018-10-09.tsv | sort > data/69M.tsv
+#	awk -F "\t" '{ if(($$4 == "601")	&& ($$20  ~ /omgång 1/))	{ print substr($$7,1,10)"\t"$$11-100000"\t0\t"$$12-$$11 } }'	data/FSE613-grouting.tsv > data/HT601-inject-omg1.tsv
+#	awk -F "\t" '{ if(($$4 == "601")	&& ($$20 !~ /omgång 1/))	{ print substr($$7,1,10)"\t"$$11-100000"\t0\t"$$12-$$11 } }'	data/FSE613-grouting.tsv > data/HT601-inject-omgx.tsv
+#	awk -F "\t" '{ if(($$4 == "602")	&& ($$20  ~ /omgång 1/))	{ print substr($$7,1,10)"\t"$$11-200000"\t0\t"$$12-$$11 } }'	data/FSE613-grouting.tsv > data/HT602-inject-omg1.tsv
+#	awk -F "\t" '{ if(($$4 == "602")	&& ($$20 !~ /omgång 1/))	{ print substr($$7,1,10)"\t"$$11-200000"\t0\t"$$12-$$11 } }'	data/FSE613-grouting.tsv > data/HT602-inject-omgx.tsv
+#	awk -F "\t" '{ if(($$4 == "691")	&& ($$20  ~ /omgång 1/))	{ print substr($$7,1,10)"\t28526\t0\t"$$12-$$11 } }'			data/FSE613-grouting.tsv > data/AT691-inject-omg1.tsv
+#	awk -F "\t" '{ if(($$4 == "691")	&& ($$20 !~ /omgång 1/))	{ print substr($$7,1,10)"\t28526\t0\t"$$12-$$11 } }'			data/FSE613-grouting.tsv > data/AT691-inject-omgx.tsv
+#	awk -F "\t" '{ if(($$4 == "69M")	&& ($$20  ~ /omgång 1/))	{ print substr($$7,1,10)"\t28520\t0\t"$$12-$$11 } }'			data/FSE613-grouting.tsv > data/UT69M-inject-omg1.tsv
+#	awk -F "\t" '{ if(($$4 == "69M")	&& ($$20 !~ /omgång 1/))	{ print substr($$7,1,10)"\t28520\t0\t"$$12-$$11 } }'			data/FSE613-grouting.tsv > data/UT69M-inject-omgx.tsv
+#	awk -F "\t" '{ if(($$4 == "6AB")	&& ($$20  ~ /omgång 1/))	{ print substr($$7,1,10)"\t28552\t0\t"$$12-$$11 } }'			data/FSE613-grouting.tsv > data/UT6AB-inject-omg1.tsv
+#	awk -F "\t" '{ if(($$4 == "6AB")	&& ($$20  ~ /omgång 1/))	{ print substr($$7,1,10)"\t28552\t0\t"$$12-$$11 } }'			data/FSE613-grouting.tsv > data/UT6AB-inject-omgx.tsv
+
+#	data/process-timeline.awk
 
 #awk -F '\t' '($3==1)&&($4=="berg")&&($7=="601"){print $2, $4, $6$7, $8, $9, $10, $12, $13}' data/blabla1.tsv
 
@@ -72,7 +80,7 @@ extract:
 #	awk -F "\t" '{ if(($$1 == "69M"   ) && ($$2 == "salva"))  { print $$4"\t"$$13 } }' data/report-2018-10-09.tsv | sort > data/69M.tsv
 
 
-#	awk -F "\t" '{ if(($$10 == "601: Negativ") && ($$2 >= "2018-01-01 00:00:00") )  { print substr($$2,1,10)"\t"substr($$11,1,5) } }' data/FSE613-bergsaker.tsv | sort > data/HT601S.tsv
+#	awk -F "\t" '{ if(($$10 == "601: Negativ") && ($$2 >= "2018-01-01 00:00:00"))  { print substr($$2,1,10)"\t"substr($$11,1,5) } }' data/FSE613-bergsaker.tsv | sort > data/HT601S.tsv
 #	awk -F "\t" '{ if(($$10 == "601: Positiv") && ($$2 >= "2018-01-01 00:00:00"))  { print substr($$2,1,10)"\t"substr($$11,1,5) } }' data/FSE613-bergsaker.tsv | sort > data/HT601N.tsv
 #	awk -F "\t" '{ if(($$10 == "602: Negativ") && ($$2 >= "2018-01-01 00:00:00"))  { print substr($$2,1,10)"\t"substr($$11,1,5) } }' data/FSE613-bergsaker.tsv | sort > data/HT602S.tsv
 #	awk -F "\t" '{ if(($$10 == "602: Positiv") && ($$2 >= "2018-01-01 00:00:00"))  { print substr($$2,1,10)"\t"substr($$11,1,5) } }' data/FSE613-bergsaker.tsv | sort > data/HT602N.tsv
